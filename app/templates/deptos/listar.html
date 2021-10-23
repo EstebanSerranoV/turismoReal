@@ -1,0 +1,84 @@
+{% extends 'app/base.html' %}
+
+{% block js %}
+
+<script>
+    function eliminarDepartamento(id_depa){
+        Swal.fire({
+            "tittle":"Estas Seguro?",
+            "text":"Esta acción no se puede deshacer",
+            "icon":"question",
+            "showCancelButton":true,
+            "cancelButtonText":"No, Cancelar",
+            "confirmButtonText":"Si, Eliminar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#dc3545"
+        })
+        .then(function(result) {
+            if(result.isConfirmed) {
+                window.location.href = "/eliminarDep/"+id_depa+"/"
+            }
+        })
+    }
+</script>
+
+{% endblock %}
+
+{% block contenido %}
+{% load humanize %}
+<br><br><br>
+<div class="card">
+    <div class="card-body">
+        <h2>Listado de departamentos</h2>
+        <hr>
+        <table class="table table-striped table-hover table-responsive-sm">
+            <tr>
+                <th>Nombre</th>
+                <th>Información</th>
+                <th>entorno</th>
+                <th>Servicios</th>
+                <th>Tarifa</th>
+                <th>Estado</th>
+                <th>Opciones</th>
+            </tr>
+        
+            {% for p in entity %}
+        
+            <tr>
+                <td>{{ p.nombre | title }}</td>
+                <td>{{ p.info_departamento }}</td>
+                <td>{{ p.entorno_departamento }}</td>
+                <td>{{ p.servicio_asociado }}</td>
+                <td>{{ p.tarifa | intcomma }}</td>
+                <td>
+                    {% if p.estado  %}
+                    Si
+                    {% else %}
+                    No
+                    {% endif %}
+                </td>
+                <td>
+                    {% if perms.app.change_departamento %}
+                    <a href="{% url 'modificarDep' p.id_depa %}" class="btn btn-info btn-sm">Modificar</a>
+                    {% endif %}
+
+                    {% if perms.app.delete_departamento %}
+                    <a href="#" onclick="eliminarDepartamento({{ p.id_depa }})" class="btn btn-danger btn-sm">Eliminar</a>
+                    {% endif %}
+                </td>
+            </tr>
+        
+            {% endfor %}
+        
+        
+        </table>
+        <hr>
+        <div>
+            {% include 'app/paginator.html' %}
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
